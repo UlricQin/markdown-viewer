@@ -2,12 +2,15 @@
 var Popup = () => {
 
   var state = {
+    copyStatus: '',
+    copyBusy: false,
     compiler: '',
     options: {},
     content: {},
     theme: '',
     themes: {},
     _themes: [
+      'wechat',
       'github',
       'github-dark',
       // 'air',
@@ -137,6 +140,31 @@ var Popup = () => {
         localStorage.removeItem('tab')
         state._tabs.activeTabIndex = 0
       })
+    },
+
+    copyWechat: async () => {
+      state.copyBusy = true
+      state.copyStatus = '正在复制…'
+      m.redraw()
+      try {
+        var [tab] = await chrome.tabs.query({active: true, currentWindow: true})
+        if (!tab) throw new Error('没有找到当前页面。')
+        var source = await chrome.tabs.sendMessage(tab.id, {message: 'wechat.source'})
+        if (!source || !source.markdown) throw new Error('请先打开已渲染的 Markdown 页面。')
+        var result = formatWechat(source.markdown, source.url, source.images || {})
+        await navigator.clipboard.write([new ClipboardItem({
+          'text/html': new Blob([result.html], {type: 'text/html'}),
+          'text/plain': new Blob([source.markdown], {type: 'text/plain'}),
+        })])
+        state.copyStatus = '已复制，可粘贴到公众号编辑器。' + (result.warnings.length ? ' ' + result.warnings.join(' ') : '')
+      }
+      catch (err) {
+        state.copyStatus = '复制失败：' + (err.message || '请打开已渲染的 Markdown 页面后重试。')
+      }
+      finally {
+        state.copyBusy = false
+        m.redraw()
+      }
     },
 
     advanced: () => {
@@ -294,6 +322,13 @@ var Popup = () => {
             ))
           )
         )
+      ),
+
+      m('.wechat-copy',
+        m('button.mdc-button.mdc-button--raised.m-button.wechat-copy-button', {
+          onclick: events.copyWechat, disabled: state.copyBusy,
+        }, '复制到公众号'),
+        state.copyStatus && m('.wechat-copy-status', {role: 'status'}, state.copyStatus)
       ),
 
       // advanced options

@@ -220,7 +220,7 @@ var Origins = () => {
         m('.col-xxl-8.col-xl-8.col-lg-8.col-md-7.col-sm-12 m-overflow', m('span.m-origin', origin)),
         m('.col-xxl-4.col-xl-4.col-lg-4.col-md-5.col-sm-12',
           // remove
-          (origin !== 'file://' || null) &&
+          (!['file://', 'https://gitee.com', 'https://raw.giteeusercontent.com'].includes(origin) || null) &&
           m('button.mdc-button mdc-button--raised m-button m-btn-remove', {
             oncreate: oncreate.ripple,
             onclick: events.remove(origin)

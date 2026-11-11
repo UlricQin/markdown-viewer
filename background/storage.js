@@ -39,7 +39,7 @@ md.storage.defaults = (compilers) => {
   var match = '\\.(?:markdown|mdown|mkdn|md|mkd|mdwn|mdtxt|mdtext|text)(?:#.*|\\?.*)?$'
 
   var defaults = {
-    theme: 'github',
+    theme: 'wechat',
     compiler: 'markdown-it',
     raw: false,
     match,
@@ -59,7 +59,9 @@ md.storage.defaults = (compilers) => {
         header: true,
         path: true,
         match,
-      }
+      },
+      'https://gitee.com': {header: true, path: true, match},
+      'https://raw.giteeusercontent.com': {header: true, path: true, match}
     },
     settings: {
       icon: 'default',
@@ -79,17 +81,35 @@ md.storage.defaults = (compilers) => {
 }
 
 md.storage.bug = (res) => {
-  // reload extension bug
+  // Fresh installs have no saved origins yet. Keep required file access and only
+  // clean up optional web origins that are no longer in the saved settings.
+  if (!res.origins) return
+
   chrome.permissions.getAll((permissions) => {
-    var origins = Object.keys(res.origins || {})
-    chrome.permissions.remove({
-      origins: permissions.origins
-        .filter((origin) => origins.indexOf(origin.slice(0, -2)) === -1)
-    })
+    var origins = Object.keys(res.origins)
+    var required = chrome.runtime.getManifest().host_permissions || []
+    var stale = (permissions.origins || []).filter((origin) =>
+      /^(?:https?|\*):\/\//.test(origin) &&
+      !required.includes(origin) &&
+      origins.indexOf(origin.replace(/\/\*$/, '')) === -1
+    )
+    if (stale.length) {
+      chrome.permissions.remove({origins: stale}, () => {
+        if (chrome.runtime.lastError) {
+          console.warn('Unable to remove stale origins:', chrome.runtime.lastError.message)
+        }
+      })
+    }
   })
 }
 
 md.storage.migrations = (state) => {
+  // Keep Gitee enabled for existing installations as well as new ones.
+  ;['https://gitee.com', 'https://raw.giteeusercontent.com'].forEach((origin) => {
+    if (!state.origins[origin]) {
+      state.origins[origin] = {header: true, path: true, match: state.match}
+    }
+  })
   // v3.6 -> v3.7
   if (typeof state.origins['file://'] === 'object') {
     state.origins['file://'].csp = false

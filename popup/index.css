@@ -194,3 +194,7 @@ body.dark .m-button {
   background-color: #607d8b;
   -webkit-border-radius: 8px;
 }
+
+.wechat-copy { clear: both; padding-top: 18px; }
+#popup .wechat-copy-button { float: none; margin: 0; width: 100%; }
+.wechat-copy-status { margin-top: 8px; font: 13px/1.6 sans-serif; overflow-wrap: anywhere; }

@@ -18,6 +18,7 @@ var state = {
     md: false,
   },
   _themes: {
+    'wechat': 'light',
     'github': 'light',
     'github-dark': 'dark',
     'almond': 'light',
@@ -55,6 +56,12 @@ var state = {
 }
 
 chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
+  if (req.message === 'wechat.source') {
+    Promise.all(giteeImageLoads).then(() => {
+      sendResponse({markdown: state.markdown, url: location.href, images: giteeImageData})
+    })
+    return true
+  }
   if (req.message === 'reload') {
     location.reload(true)
   }
@@ -97,6 +104,7 @@ var onupdate = {
 }
 
 var update = (update) => {
+  loadGiteeImages()
   scroll(update)
 
   if (state.content.syntax) {
@@ -119,7 +127,7 @@ var render = (md) => {
     compiler: state.compiler,
     markdown: frontmatter(state.markdown)
   }, (res) => {
-    state.html = res.html
+    state.html = fixGiteeImages(res.html, location.href)
     if (state.content.emoji) {
       state.html = emojinator(state.html)
     }

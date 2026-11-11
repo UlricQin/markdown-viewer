@@ -1,4 +1,31 @@
 
+
+## 微信公众号风格主题
+
+此 fork 新增 `wechat` 阅读主题，参考本机 `wechat-mp-format` skill 的排版：黑底二级标题、珊瑚色强调、灰色引用及深色代码块。新安装默认使用该主题；已有安装可以在扩展弹窗的 Theme 中选择 `wechat`，其他主题仍可切换。链接仍可点击，本地图片仍按原路径加载。此主题用于浏览器阅读；如需粘贴到公众号，请使用扩展弹窗中的「复制到公众号」。
+
+### 复制到公众号
+
+打开已渲染的 Markdown 页面，点击浏览器工具栏中的扩展图标，再点击「复制到公众号」，最后在微信公众号编辑器正文中粘贴。扩展会按 `wechat-mp-format` 的规则生成带内联样式的富文本，链接会转为文末参考资料。转换基于原始 Markdown，与当前阅读主题和解析器设置无关；Mermaid、MathJax 等扩展语法不会转成公众号图片。
+
+对于 Gitee 文档中已经成功加载的相对图片，复制时会将图片数据嵌入富文本，无需公开仓库或另设图床。公众号是否接收嵌入图片取决于其编辑器，粘贴后请检查图片；若图片未加载成功，扩展会显示提示。本地图片及其他有访问限制的图片仍可能需要替换。扩展不会自动上传图片到图床。
+
+### 构建与安装 Chrome 扩展
+
+需要 Node.js 18+、npm、Git、zip 和网络连接。在项目根目录执行：
+
+```sh
+sh build/package.sh chrome
+```
+
+构建会生成 `markdown-viewer.zip`。解压后，在 Chrome 打开 `chrome://extensions/`，启用右上角的「开发者模式」，点击「加载已解压的扩展程序」，选择解压出来包含 `manifest.json` 的 `markdown-viewer` 目录。也可以直接选择构建后的项目根目录，其中同样生成了 `manifest.json`、`themes/` 和 `vendor/`。
+
+在扩展详情页打开「允许访问文件网址」，然后在 Chrome 打开本地 `.md` 文件。如果页面尚未渲染，刷新页面；已有配置的用户请在扩展弹窗选择 `wechat` 主题。修改代码或重新构建后，在扩展管理页点击重新加载，再刷新 Markdown 页面。
+
+扩展默认包含 `gitee.com` 和 `raw.giteeusercontent.com` 的站点访问权限，以便读取 Gitee 仓库内的相对图片；访问私有仓库时，请在同一 Chrome profile 中登录 Gitee。更新扩展时 Chrome 可能要求重新确认新增的网站权限。
+
+主题源码位于 `themes-src/wechat.css`；重新构建会将其复制到扩展的 `themes/` 目录。原有的解析器、目录、Mermaid 和 MathJax 选项继续沿用上游设置。
+
 # Markdown Viewer / Browser Extension
 
 **Install: [Chrome]** / **[Firefox]** / **[Edge]** / **[Opera]**  / **[Brave]** / **[Chromium]** / **[Vivaldi]**

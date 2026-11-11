@@ -52,11 +52,14 @@
 
   "permissions": [
     "storage",
+    "clipboardWrite",
     "scripting"
   ],
 
   "host_permissions": [
-    "file:///*"
+    "file:///*",
+    "https://gitee.com/*",
+    "https://raw.giteeusercontent.com/*"
   ],
 
   "optional_host_permissions": [

@@ -4,6 +4,14 @@ md.messages = ({storage: {defaults, state, set}, compilers, mathjax, xhr, webreq
   return (req, sender, sendResponse) => {
 
     // content
+    if (req.message === 'gitee.image') {
+      md.giteeImage(req.url, sender.url || '').then(
+        (src) => sendResponse({src}),
+        (err) => sendResponse({error: err.message})
+      )
+      return true
+    }
+
     if (req.message === 'markdown') {
       var markdown = req.markdown
 

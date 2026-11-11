@@ -26,6 +26,7 @@ sh bootstrap/build.sh
 sh csso/build.sh
 sh markdown-it/build.sh
 sh marked/build.sh
+sh highlight/build.sh
 sh mathjax/build.sh
 sh mdc/build.sh
 sh mermaid/build.sh

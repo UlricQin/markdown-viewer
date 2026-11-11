@@ -48,6 +48,8 @@ npx csso --input cleanrmd/inst/resources/water/water.css --output ../../themes/w
 npx csso --input cleanrmd/inst/resources/water-dark/water-dark.css --output ../../themes/water-dark.css
 npx csso --input cleanrmd/inst/resources/writ/writ.css --output ../../themes/writ.css
 
+cp ../../themes-src/wechat.css ../../themes/wechat.css
+
 # after
 rm -rf node_modules/ cleanrmd/
 
